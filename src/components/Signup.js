@@ -2,31 +2,34 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const Signup = (props) => {
-    const [credentials, setCredentials] = useState({ name:"", email: "", password: "", cpassword:"" })
+    const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" })
     const navigate = useNavigate()
-    const {showAlert} = props
+    const { showAlert } = props
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (credentials.password === credentials.cpassword) {
+            const response = await fetch("http://localhost:5000/api/auth/createuser", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: credentials.name, email: credentials.email, password: credentials.password })
+            });
+            const json = await response.json();
+            console.log(json)
 
-        const response = await fetch("http://localhost:5000/api/auth/createuser", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({name: credentials.name, email: credentials.email, password: credentials.password })
-        });
-        const json = await response.json();
-        console.log(json)
-
-        if(json.success){
-            // Save the auth-token and redirect
-            localStorage.setItem("token", json.authtoken)
-            navigate("/")
-            showAlert("Account Created Successfully", "success")
+            if (json.success) {
+                // Save the auth-token and redirect
+                localStorage.setItem("token", json.authtoken)
+                navigate("/")
+                showAlert("Account Created Successfully", "success")
+            }
+            else {
+                showAlert("Invalid Details", "danger")
+            }
         }
-        else{
-            showAlert("Invalid Details", "danger")
-        }
+        else
+            showAlert("Passwords don't match", "danger")
 
     }
     const onChange = (e) => {
@@ -47,13 +50,13 @@ const Signup = (props) => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="password" className="form-label">Password</label>
-                    <input type="password" className="form-control" onChange={onChange} required minLength={5} id="password" name='password'/>
+                    <input type="password" className="form-control" onChange={onChange} required minLength={5} id="password" name='password' />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-                    <input type="password" className="form-control" onChange={onChange} required minLength={5} id="cpassword" name='cpassword'/>
+                    <input type="password" className="form-control" onChange={onChange} required minLength={5} id="cpassword" name='cpassword' />
                 </div>
-                
+
                 <button type="submit" className="btn btn-primary">Sign Up</button>
             </form>
         </div>
