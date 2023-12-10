@@ -1,1 +1,1 @@
-export const host = "https://www.my-pocket-notebook.vercel.app";
+export const host = "https://my-pocket-notebook.vercel.app";
